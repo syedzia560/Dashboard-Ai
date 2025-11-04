@@ -3,21 +3,7 @@ import { StatCard } from "../StatCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-
-const cameras = [
-  { id: "CAM-001", location: "Main Entrance", status: "online", quality: 98 },
-  { id: "CAM-002", location: "Aisle 1-3", status: "online", quality: 95 },
-  { id: "CAM-003", location: "Aisle 4-6", status: "online", quality: 97 },
-  { id: "CAM-004", location: "Aisle 7-9", status: "warning", quality: 72 },
-  { id: "CAM-005", location: "Checkout Area", status: "online", quality: 99 },
-  { id: "CAM-006", location: "Exit", status: "online", quality: 96 },
-  { id: "CAM-007", location: "Storage Room", status: "offline", quality: 0 },
-  { id: "CAM-008", location: "Back Door", status: "online", quality: 94 },
-  { id: "CAM-009", location: "Frozen Section", status: "online", quality: 93 },
-  { id: "CAM-010", location: "Produce Area", status: "warning", quality: 68 },
-  { id: "CAM-011", location: "Meat Counter", status: "online", quality: 97 },
-  { id: "CAM-012", location: "Pharmacy", status: "online", quality: 98 },
-];
+import { getDatabank } from "@/data/databank";
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -33,6 +19,8 @@ const getStatusColor = (status: string) => {
 };
 
 export const CameraHealth = () => {
+  const db = getDatabank();
+  const cameras = db.cameras;
   const onlineCameras = cameras.filter((c) => c.status === "online").length;
   const warningCameras = cameras.filter((c) => c.status === "warning").length;
   const offlineCameras = cameras.filter((c) => c.status === "offline").length;

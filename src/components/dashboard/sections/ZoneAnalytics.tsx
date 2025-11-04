@@ -3,24 +3,7 @@ import { StatCard } from "../StatCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-
-const zones = [
-  { name: "Entrance", engagement: 98, avgTime: "2.1 min", visitors: 1247, status: "hot" },
-  { name: "Aisle 1-3", engagement: 76, avgTime: "5.4 min", visitors: 892, status: "hot" },
-  { name: "Aisle 4-6", engagement: 64, avgTime: "4.2 min", visitors: 654, status: "warm" },
-  { name: "Aisle 7-9", engagement: 45, avgTime: "3.1 min", visitors: 423, status: "cold" },
-  { name: "Produce", engagement: 89, avgTime: "6.8 min", visitors: 1034, status: "hot" },
-  { name: "Frozen", engagement: 52, avgTime: "3.8 min", visitors: 512, status: "warm" },
-  { name: "Bakery", engagement: 71, avgTime: "4.5 min", visitors: 743, status: "warm" },
-  { name: "Checkout", engagement: 94, avgTime: "4.2 min", visitors: 1189, status: "hot" },
-];
-
-const heatmapGrid = [
-  ["hot", "hot", "warm", "warm"],
-  ["hot", "warm", "cold", "cold"],
-  ["warm", "warm", "warm", "cold"],
-  ["hot", "hot", "hot", "warm"],
-];
+import { getDatabank } from "@/data/databank";
 
 const getHeatColor = (status: string) => {
   switch (status) {
@@ -36,6 +19,11 @@ const getHeatColor = (status: string) => {
 };
 
 export const ZoneAnalytics = () => {
+  const db = getDatabank();
+  const zones = db.zones;
+  const heatmapGrid = db.heatmapGrid;
+  const hotZones = zones.filter((z) => z.status === "hot").length;
+  const coldZones = zones.filter((z) => z.status === "cold").length;
   const avgEngagement = Math.round(
     zones.reduce((sum, z) => sum + z.engagement, 0) / zones.length
   );
@@ -47,14 +35,14 @@ export const ZoneAnalytics = () => {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatCard
           title="Hot Zones"
-          value="4"
+          value={hotZones}
           icon={TrendingUp}
           subtitle="High traffic areas"
           status="danger"
         />
         <StatCard
           title="Cold Zones"
-          value="2"
+          value={coldZones}
           icon={TrendingDown}
           subtitle="Low engagement"
           status="info"
@@ -67,7 +55,11 @@ export const ZoneAnalytics = () => {
         />
         <StatCard
           title="Avg Zone Dwell"
-          value="4.3 min"
+          value={
+            `${(
+              zones.reduce((sum, z) => sum + parseFloat(z.avgTime), 0) / zones.length
+            ).toFixed(1)} min`
+          }
           icon={Clock}
           status="info"
         />

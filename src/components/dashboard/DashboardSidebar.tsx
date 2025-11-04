@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/sidebar";
 
 const navigationItems = [
-  { title: "Overview", url: "/", icon: LayoutDashboard },
+  { title: "Overview", url: "#overview", icon: LayoutDashboard },
   { title: "People Analytics", url: "#people", icon: Users },
   { title: "Staff Operations", url: "#staff", icon: UserCircle },
   { title: "Camera Health", url: "#cameras", icon: Camera },
@@ -55,8 +55,18 @@ export const DashboardSidebar = () => {
               {navigationItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <NavLink 
+<NavLink 
                       to={item.url}
+                      onClick={(e) => {
+                        if (item.url.startsWith("#")) {
+                          e.preventDefault();
+                          const el = document.getElementById(item.url.slice(1));
+                          if (el) {
+                            el.scrollIntoView({ behavior: "smooth", block: "start" });
+                            history.replaceState(null, "", item.url);
+                          }
+                        }
+                      }}
                       className={({ isActive }) =>
                         isActive
                           ? "bg-sidebar-accent text-sidebar-accent-foreground"

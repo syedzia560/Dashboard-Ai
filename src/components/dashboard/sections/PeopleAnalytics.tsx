@@ -16,30 +16,16 @@ import {
   LineChart,
   Line,
 } from "recharts";
-
-const genderData = [
-  { name: "Male", value: 58, color: "hsl(var(--chart-1))" },
-  { name: "Female", value: 42, color: "hsl(var(--chart-2))" },
-];
-
-const ageData = [
-  { age: "18-25", count: 45 },
-  { age: "26-35", count: 78 },
-  { age: "36-45", count: 62 },
-  { age: "46-55", count: 41 },
-  { age: "56+", count: 28 },
-];
-
-const trafficData = [
-  { time: "9AM", visitors: 45 },
-  { time: "11AM", visitors: 89 },
-  { time: "1PM", visitors: 142 },
-  { time: "3PM", visitors: 98 },
-  { time: "5PM", visitors: 156 },
-  { time: "7PM", visitors: 67 },
-];
+import { getDatabank } from "@/data/databank";
 
 export const PeopleAnalytics = () => {
+  const db = getDatabank();
+  const genderData = db.people.genderData;
+  const ageData = db.people.ageData;
+  const trafficData = db.people.trafficData;
+  const returningPct = 60 + Math.round((genderData[0].value - 50) / 2); // simple derived value
+  const newPct = 100 - returningPct;
+
   return (
     <div className="space-y-6" id="people">
       <h2 className="text-2xl font-bold">People Analytics</h2>
@@ -47,28 +33,28 @@ export const PeopleAnalytics = () => {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatCard
           title="People Entered Today"
-          value="1,247"
+          value={db.people.enteredToday}
           icon={UserPlus}
           trend={{ value: "+12% vs yesterday", positive: true }}
           status="success"
         />
         <StatCard
           title="People Left Today"
-          value="1,189"
+          value={db.people.leftToday}
           icon={UserMinus}
           trend={{ value: "+8% vs yesterday", positive: true }}
           status="info"
         />
         <StatCard
           title="Currently in Store"
-          value="58"
+          value={db.people.currentInStore}
           icon={Users}
           subtitle="Live count"
           status="success"
         />
         <StatCard
           title="Average Dwell Time"
-          value="23 min"
+          value={`${db.people.avgDwellMin} min`}
           icon={Clock}
           trend={{ value: "+2 min vs avg", positive: true }}
           status="info"
@@ -152,16 +138,16 @@ export const PeopleAnalytics = () => {
             <div>
               <div className="flex justify-between mb-2">
                 <span className="text-sm font-medium">Returning Customers</span>
-                <span className="text-sm text-muted-foreground">68%</span>
+                <span className="text-sm text-muted-foreground">{returningPct}%</span>
               </div>
-              <Progress value={68} className="h-2" />
+              <Progress value={returningPct} className="h-2" />
             </div>
             <div>
               <div className="flex justify-between mb-2">
                 <span className="text-sm font-medium">New Customers</span>
-                <span className="text-sm text-muted-foreground">32%</span>
+                <span className="text-sm text-muted-foreground">{newPct}%</span>
               </div>
-              <Progress value={32} className="h-2" />
+              <Progress value={newPct} className="h-2" />
             </div>
           </CardContent>
         </Card>
@@ -171,22 +157,16 @@ export const PeopleAnalytics = () => {
             <CardTitle>Queue Metrics</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex justify-between items-center">
-              <span className="text-sm">Counter 1</span>
-              <span className="text-lg font-bold">4 people</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm">Counter 2</span>
-              <span className="text-lg font-bold">7 people</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm">Counter 3</span>
-              <span className="text-lg font-bold">3 people</span>
-            </div>
+            {db.people.queue.map((q) => (
+              <div key={q.counter} className="flex justify-between items-center">
+                <span className="text-sm">{q.counter}</span>
+                <span className="text-lg font-bold">{q.people} people</span>
+              </div>
+            ))}
             <div className="pt-2 border-t">
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium">Avg Wait Time</span>
-                <span className="text-lg font-bold text-primary">4.2 min</span>
+                <span className="text-lg font-bold text-primary">{(db.people.queue.reduce((a, b) => a + b.people, 0) / db.people.queue.length).toFixed(1)} min</span>
               </div>
             </div>
           </CardContent>

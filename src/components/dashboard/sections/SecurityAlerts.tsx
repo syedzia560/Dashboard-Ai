@@ -3,45 +3,7 @@ import { StatCard } from "../StatCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-
-const recentAlerts = [
-  {
-    id: 1,
-    type: "Abandoned Object",
-    location: "Aisle 5",
-    time: "2 min ago",
-    severity: "high",
-    icon: PackageX,
-    status: "active",
-  },
-  {
-    id: 2,
-    type: "Loitering Detected",
-    location: "Exit Area",
-    time: "8 min ago",
-    severity: "medium",
-    icon: UserX,
-    status: "investigating",
-  },
-  {
-    id: 3,
-    type: "Unauthorized Entry",
-    location: "Storage Room",
-    time: "15 min ago",
-    severity: "high",
-    icon: Shield,
-    status: "resolved",
-  },
-  {
-    id: 4,
-    type: "Suspicious Behavior",
-    location: "Aisle 7",
-    time: "23 min ago",
-    severity: "low",
-    icon: AlertTriangle,
-    status: "monitoring",
-  },
-];
+import { getDatabank } from "@/data/databank";
 
 const getSeverityColor = (severity: string) => {
   switch (severity) {
@@ -72,6 +34,8 @@ const getStatusColor = (status: string) => {
 };
 
 export const SecurityAlerts = () => {
+  const db = getDatabank();
+  const recentAlerts = db.alerts;
   const activeAlerts = recentAlerts.filter((a) => a.status === "active").length;
   const highSeverityCount = recentAlerts.filter((a) => a.severity === "high").length;
 
@@ -95,14 +59,14 @@ export const SecurityAlerts = () => {
         />
         <StatCard
           title="Total Today"
-          value="12"
+          value={Math.max(8, recentAlerts.length + 8)}
           icon={AlertTriangle}
           trend={{ value: "-3 vs yesterday", positive: true }}
           status="info"
         />
         <StatCard
           title="Avg Response Time"
-          value="2.8 min"
+          value={`${(2.4 + (activeAlerts ? 0.1 * activeAlerts : 0)).toFixed(1)} min`}
           icon={Shield}
           status="success"
         />

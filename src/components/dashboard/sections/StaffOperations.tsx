@@ -3,21 +3,13 @@ import { StatCard } from "../StatCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-
-const staffMembers = [
-  { id: 1, name: "John Smith", role: "Floor Manager", status: "Active", zone: "Aisle 1-3" },
-  { id: 2, name: "Sarah Johnson", role: "Cashier", status: "Active", zone: "Counter 1" },
-  { id: 3, name: "Mike Davis", role: "Stock Associate", status: "Active", zone: "Storage" },
-  { id: 4, name: "Emily Brown", role: "Cashier", status: "Break", zone: "Counter 2" },
-  { id: 5, name: "Tom Wilson", role: "Security", status: "Active", zone: "Entrance" },
-];
-
-const unattendedZones = [
-  { zone: "Aisle 7-9", duration: "12 min", priority: "high" },
-  { zone: "Frozen Section", duration: "5 min", priority: "medium" },
-];
+import { getDatabank } from "@/data/databank";
 
 export const StaffOperations = () => {
+  const db = getDatabank();
+  const staffMembers = db.staff.members;
+  const unattendedZones = db.staff.unattendedZones;
+
   return (
     <div className="space-y-6" id="staff">
       <h2 className="text-2xl font-bold">Staff & Operations</h2>
@@ -25,27 +17,27 @@ export const StaffOperations = () => {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatCard
           title="Staff on Duty"
-          value="12"
+          value={staffMembers.filter((s) => s.status === "Active").length}
           icon={UserCircle}
-          subtitle="Out of 15 scheduled"
+          subtitle={`Out of ${staffMembers.length} scheduled`}
           status="success"
         />
         <StatCard
           title="Staff-Customer Ratio"
-          value="1:21"
+          value={`1:${Math.max(10, Math.round(db.people.currentInStore / Math.max(1, staffMembers.length)))}`}
           icon={UserCheck}
           subtitle="Optimal: 1:20"
           status="success"
         />
         <StatCard
           title="Unattended Zones"
-          value="2"
+          value={unattendedZones.length}
           icon={AlertTriangle}
           status="warning"
         />
         <StatCard
           title="Avg Response Time"
-          value="3.2 min"
+          value={`${(3 + (unattendedZones.length ? 0.2 * unattendedZones.length : 0)).toFixed(1)} min`}
           icon={Clock}
           trend={{ value: "-0.5 min vs avg", positive: true }}
           status="info"

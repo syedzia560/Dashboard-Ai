@@ -9,7 +9,7 @@ const Index = () => {
   return (
     <DashboardLayout>
       <div className="space-y-8">
-        <div>
+        <div id="overview">
           <h1 className="text-3xl font-bold mb-2">Dashboard Overview</h1>
           <p className="text-muted-foreground">
             Real-time analytics and monitoring for SmartMarket Downtown
@@ -21,6 +21,11 @@ const Index = () => {
         <CameraHealth />
         <ZoneAnalytics />
         <SecurityAlerts />
+
+        <div id="settings" className="space-y-2">
+          <h2 className="text-2xl font-bold">Settings</h2>
+          <p className="text-muted-foreground">Project settings placeholder.</p>
+        </div>
       </div>
     </DashboardLayout>
   );
